@@ -6,6 +6,8 @@ import org.example.models.ListEntity;
 
 import java.io.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Main {
 //    private static String FILE_INPUT = System.getProperty("user.dir") + "/src/main/resources/lng.txt";
@@ -19,17 +21,20 @@ public class Main {
     public static void main(String[] args) {
 
         long start = System.currentTimeMillis();
+
+        Pattern pattern = Pattern.compile("^(\"([^\"]*)?\";)*\"([^\"]*)?\"$");
+
 //        try (BufferedReader reader = new BufferedReader(new FileReader(FILE_INPUT))) {
         try (BufferedReader reader = new BufferedReader(new FileReader(args[0]))) {
             String line = reader.readLine();
             while (line != null) {
-
-                workerData(line
-                        .replace("\"", "")
-                        .split(";"));
-
+                Matcher matcher = pattern.matcher(line);
+                if (matcher.matches()) {
+                    workerData(line
+                            .replace("\"", "")
+                            .split(";"));
+                }
                 line = reader.readLine();
-
             }
         } catch (IOException e) {
             e.printStackTrace();
@@ -40,7 +45,7 @@ public class Main {
         printAndWrite();
 
         System.out.println(((System.currentTimeMillis() - start) / 1000f) + " seconds");
-//        System.out.println((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory()) / 1000000 + " MB памяти использовано");
+        System.out.println((Runtime.getRuntime().totalMemory()-Runtime.getRuntime().freeMemory()) / 1000000 + " MB памяти использовано");
     }
 
     private static void workerData(String[] values) {
